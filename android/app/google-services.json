@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "152712731069",
+    "project_id": "inbook-3f1b8",
+    "storage_bucket": "inbook-3f1b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152712731069:android:8b0deb4f3d171b4d941ad4",
+        "android_client_info": {
+          "package_name": "inbook.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGyNXk7LUgE55Q05xGvW7HtnL2GFQnVrk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
