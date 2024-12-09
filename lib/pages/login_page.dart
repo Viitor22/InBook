@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:in_book/componets/button.dart';
-import 'package:in_book/componets/text_field.dart';
+import 'package:in_book/pages/register_page.dart';
+import 'package:in_book/pages/forget_password_screen.dart';
+import 'package:in_book/theme/theme.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +16,8 @@ class LoginPage extends StatefulWidget {
 
 
 class _LoginPageState extends State<LoginPage> {
+    bool rememberPassword = true;
+    bool _passwordVisible = false;
 
     final emailTextController = TextEditingController();
     final passwordTextController = TextEditingController();
@@ -23,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
         context: context, 
         builder: (context) => const Center(
           child: CircularProgressIndicator(),
-        )
+        ),
       );
 
       try {
@@ -59,73 +63,235 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            const Icon(
-                                Icons.lock,
+                              Icon(
+                                Icons.book,
                                 size: 100,
+                                color: lightColorScheme.primary,
                             ),
 
                             const SizedBox(height: 50),
-                            // mensagem de voltar
+
                             Text(
-                                "Bem Vindo de volta!",
-                                style: TextStyle(
-                                  color: Colors.grey[700]
-                                ),
+                            'Welcome back',
+                            style: TextStyle(
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w900,
+                              color: lightColorScheme.primary,
                             ),
+                          ),
 
                             const SizedBox(height: 25),
 
                             // email
-                            MyTextField(
+                            TextFormField(
                               controller: emailTextController,
-                              hintText: 'Email', 
                               obscureText: false,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter Email';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                label: const Text('Email'),
+                                hintText: 'Enter Email',
+                                hintStyle: const TextStyle(
+                                  color: Colors.black26,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                             ),
 
                             const SizedBox(height: 10),
 
                             // senha
-                            MyTextField(
+                            TextFormField(
                               controller: passwordTextController, 
-                              hintText: 'Senha', 
-                              obscureText: true,
+                              obscureText: !_passwordVisible,
+                              obscuringCharacter: '*',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter Password';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                label: const Text('Password'),
+                                hintText: 'Enter Password',
+                                hintStyle: const TextStyle(
+                                  color: Colors.black26,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.black26,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
 
                             const SizedBox(height: 10),
-
-                            // botao
-
-                            MyButton(
-                              onTap: signIn, 
-                              text: 'Entrar',
-                            ),
 
                             const SizedBox(height: 25),
                             // pagina de registro
 
                             Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                    Text("Não é membro ?",
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      )
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                      value: rememberPassword,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          rememberPassword = value!;
+                                        });
+                                      },
+                                      activeColor: lightColorScheme.primary,
                                     ),
-                                    const SizedBox(width: 4),
-                                    GestureDetector(
-                                      onTap: widget.onTap,
-                                      child: const Text(
-                                        "Registre agora!",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue,
-                                        )
-                                      )
-                                    )
-                                    
-                                ]
-                            )
-                        ],
+                                    const Text(
+                                      'Remember me',
+                                      style: TextStyle(
+                                        color: Colors.black45,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (e) => const ForgetPasswordScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Forget password?',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: lightColorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 25.0,
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: MyButton(
+                                onTap: signIn, 
+                                text: 'Entrar',
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 25.0,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 0.7,
+                                    color: Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 0,
+                                    horizontal: 10,
+                                  ),
+                                  child: Text(
+                                    'Sign in with',
+                                    style: TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 0.7,
+                                    color: Colors.grey.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 25.0,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(Icons.facebook),
+                                Icon(Icons.apple),
+                                Icon(Icons.telegram),
+                                Icon(Icons.email)
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 25.0,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Don\'t have an account? ',
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RegisterPage(onTap: widget.onTap)
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Sign up',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: lightColorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                     ),
                     )
                 ),

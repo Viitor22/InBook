@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:in_book/componets/drawer.dart';
 import 'package:in_book/componets/text_field.dart';
 import 'package:in_book/componets/wall_post.dart';
+import 'package:in_book/pages/profile_page.dart';
+import 'package:in_book/theme/theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,38 +24,51 @@ class _HomePageState extends State<HomePage> {
   }
 
   void postMessage() {
-    if(textController.text.isEmpty){
+    if(textController.text.isNotEmpty){
       FirebaseFirestore.instance.collection("User Posts").add({
         'UserEmail': currentUser.email,
         'Message': textController.text,
         'TimeStamp': Timestamp.now(),
+        'Likes': [],
       });
     }
 
-    
   setState(() {
     textController.clear();
   });
   }
 
+  void goToProfilePage() {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context, MaterialPageRoute(
+        builder: (context)=> const ProfilePage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text("The Wall"),
-        backgroundColor: Colors.grey[900],
+        title: Text("InBook"),
+        centerTitle: true,
+        backgroundColor: lightColorScheme.primary,
         actions: [
           IconButton(
-            onPressed: signOut, 
-            icon: const Icon(Icons.logout),
+            onPressed: signOut,
+            icon: Icon(Icons.logout),
           )
         ],
       ),
+      drawer: MyDrawer(onProfileTap: goToProfilePage, onLogoutTap: signOut),
       body: Center(
         child: Column(
           children: [
             Expanded(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                   .collection("Users Posts")
                   .orderBy(
@@ -69,6 +84,8 @@ class _HomePageState extends State<HomePage> {
                           return WallPost(
                             message: post["Message"], 
                             user: post["UserEmail"],
+                            postId: post.id,
+                            likes: List<String>.from(post['Likes'] ?? []),
                             );
                         },
                       );
@@ -91,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 Expanded(
                   child: MyTextField(
                     controller: textController, 
-                    hintText: "Escreva o que está pensando...", 
+                    hintText: "Whrite what are you thinking...", 
                     obscureText: false
                     ) 
                 ),
@@ -104,7 +121,7 @@ class _HomePageState extends State<HomePage> {
               ),
           ),
 
-            Text("Logado como: " + currentUser.email!, style: TextStyle(color: Colors.grey),),
+            Text("Logado como: ${currentUser.email!}", style: TextStyle(color: Colors.grey),),
 
             const SizedBox(
               height: 50,
@@ -115,3 +132,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
